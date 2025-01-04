@@ -16,5 +16,5 @@ COPY . .
 # Expose the app port
 EXPOSE 80
 
-# start app
-CMD [ "npm" "start" ]
+# Run the app
+CMD ["node", "index.js"]
