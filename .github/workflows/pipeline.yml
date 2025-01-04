@@ -24,9 +24,14 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Remove Existing Docker Image
       - name: Remove Existing Docker Image
+        shell: pwsh
         run: |
-          docker images -q meetpatel1111/nodejs-hello-world:latest | xargs -r docker rmi
+          $imageId = docker images -q meetpatel1111/nodejs-hello-world:latest
+          if ($imageId) {
+            docker rmi -f $imageId
+          }
 
       # Build Docker Image
       - name: Build Docker Image
