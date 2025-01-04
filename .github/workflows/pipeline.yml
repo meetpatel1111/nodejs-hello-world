@@ -24,6 +24,10 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Remove Existing Docker Image
+        run: |
+          docker images -q meetpatel1111/nodejs-hello-world:latest | xargs -r docker rmi
+
       # Build Docker Image
       - name: Build Docker Image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/nodejs-hello-world:latest .
@@ -35,6 +39,7 @@ jobs:
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
         timeout-minutes: 5
+        logout: false
 
       # Push Docker Image
       - name: Push Docker Image
