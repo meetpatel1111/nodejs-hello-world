@@ -38,4 +38,4 @@ jobs:
 
       # Push Docker Image
       - name: Push Docker Image
-        run: docker push ${{ secrets.DOKER_USERNAME }}/nodejs-hello-world:latest
+        run: docker push meetpatel1111/nodejs-hello-world:latest
