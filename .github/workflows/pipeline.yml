@@ -26,6 +26,7 @@ jobs:
       
       # Remove Existing Docker Container
       - name: Remove Existing Docker Container
+        shell: bash
         run: |
           container_id=$(docker ps -q --filter "ancestor=meetpatel1111/nodejs-hello-world:latest")
           if [ -n "$container_id" ]; then
