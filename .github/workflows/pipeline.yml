@@ -20,9 +20,12 @@ jobs:
       - name: Clone App Code from External Repository
         run: git clone https://github.com/fhinkel/nodejs-hello-world.git app-code
 
-      # Copy Dockerfile to app-code directory
-      - name: Copy Dockerfile
-        run: cp Dockerfile app-code/
+      # Move files from app-code to parent directory
+      - name: Move Files to Parent Directory
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "app-code" -Recurse | Move-Item -Destination "." -Force
+          Remove-Item "app-code" -Recurse -Force
       
       # Set up Node.js
       - name: Set Up Node.js
@@ -32,7 +35,6 @@ jobs:
 
       # Install Dependencies
       - name: Install Dependencies
-        working-directory: app-code
         run: npm install
       
       # Remove Existing Docker Container
@@ -58,7 +60,6 @@ jobs:
 
       # Build Docker Image
       - name: Build Docker Image
-        working-directory: app-code
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/nodejs-hello-world:latest .
 
       # Log in to DockerHub
