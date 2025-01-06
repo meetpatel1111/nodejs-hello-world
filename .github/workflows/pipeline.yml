@@ -16,7 +16,11 @@ jobs:
 
       # Clone nodejs-hello-world app code
       - name: Clone App Code from External Repository
-        run: git clone https://github.com/fhinkel/nodejs-hello-world.git
+        run: git clone https://github.com/fhinkel/nodejs-hello-world.git app-code
+      
+      # Copy Dockerfile to the nodejs-hello-world directory
+      - name: Copy Dockerfile
+        run: cp Dockerfile app-code
       
       # Set up Node.js
       - name: Set Up Node.js
@@ -26,6 +30,7 @@ jobs:
 
       # Install Dependencies
       - name: Install Dependencies
+        working-directory: app-code
         run: npm install
       
       # Remove Existing Docker Container
@@ -51,6 +56,7 @@ jobs:
 
       # Build Docker Image
       - name: Build Docker Image
+        working-directory: app-code
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/nodejs-hello-world:latest .
 
       # Log in to DockerHub
