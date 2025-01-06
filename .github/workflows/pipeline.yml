@@ -66,3 +66,21 @@ jobs:
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # SonarQube Quality Gate status
+      - name: SonarQube Quality Gate
+        shell: pwsh
+        run: |
+          $projectKey = "nodejs-hello-world"
+          $sonarUrl = "$env:SONAR_HOST_URL/api/qualitygates/project_status?projectKey=$projectKey"
+          $response = Invoke-RestMethod -Uri $sonarUrl -Headers @{ "Authorization" = "Bearer $env:SONAR_TOKEN" }
+          
+          if ($response.projectStatus.status -ne "OK") {
+            Write-Error "SonarQube Quality Gate failed. Status: $($response.projectStatus.status)"
+            exit 1
+          } else {
+            Write-Output "SonarQube Quality Gate passed."
+          }
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
