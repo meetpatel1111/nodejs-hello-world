@@ -85,6 +85,11 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+      # Remove existing container if exists
+      - name: Remove Existing Docker Container
+        run: |
+          docker rm -f nodejs-hello-world || true
+          
       # Deploy nodejs-hello-world app
       - name: Deploy nodejs-hello-world-app
         run: docker run -p 8080:80 --name nodejs-hello-world meetpatel1111/nodejs-hello-world:latest
