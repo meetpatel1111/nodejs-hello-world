@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-scan:
+  build-scan-deploy:
     runs-on: self-hosted
 
     steps:
@@ -84,3 +84,7 @@ jobs:
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # Deploy nodejs-hello-world app
+      - name: Deploy nodejs-hello-world-app
+        run: docker run -p 8080:80 --name nodejs-hello-world meetpatel1111/nodejs-hello-world:latest
