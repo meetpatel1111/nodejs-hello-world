@@ -16,11 +16,11 @@ jobs:
 
       # Clone nodejs-hello-world app code
       - name: Clone App Code from External Repository
-        run: cd .. && git clone https://github.com/fhinkel/nodejs-hello-world.git .
-      
-      # Copy Dockerfile to the nodejs-hello-world directory
+        run: git clone https://github.com/fhinkel/nodejs-hello-world.git app-code
+
+      # Copy Dockerfile to app-code directory
       - name: Copy Dockerfile
-        run: cp Dockerfile app-code
+        run: cp Dockerfile app-code/
       
       # Set up Node.js
       - name: Set Up Node.js
