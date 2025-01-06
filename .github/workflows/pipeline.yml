@@ -79,7 +79,7 @@ jobs:
             -D"sonar.sources=." `
             -D"sonar.host.url=$env:SONAR_HOST_URL" `
             -D"sonar.login=$env:SONAR_TOKEN"
-            -Dsonar.ws.timeout=120
+            -D"sonar.ws.timeout=120"
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
