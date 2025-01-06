@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build-and-scan:
     runs-on: self-hosted
 
     steps:
@@ -78,7 +78,7 @@ jobs:
             -D"sonar.projectKey=nodejs-hello-world" `
             -D"sonar.sources=." `
             -D"sonar.host.url=$env:SONAR_HOST_URL" `
-            -D"sonar.login=$env:SONAR_TOKEN"
+            -D"sonar.login=$env:SONAR_TOKEN" `
             -D"sonar.ws.timeout=120"
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
