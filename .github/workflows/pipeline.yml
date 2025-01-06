@@ -23,6 +23,17 @@ jobs:
       # Install Dependencies
       - name: Install Dependencies
         run: npm install
+      
+      # Remove Existing Docker Container
+      - name: Remove Existing Docker Container
+        run: |
+          container_id=$(docker ps -q --filter "ancestor=meetpatel1111/nodejs-hello-world:latest")
+          if [ -n "$container_id" ]; then
+            echo "Stopping and removing running container: $container_id"
+            docker rm -f $container_id
+          else
+            echo "No running container found for the image."
+          fi
 
       # Remove Existing Docker Image
       - name: Remove Existing Docker Image
@@ -50,6 +61,25 @@ jobs:
       - name: Push Docker Image
         run: docker push meetpatel1111/nodejs-hello-world:latest
       
+      # Ensure SonarQube Container is Running
+      - name: Ensure SonarQube Container is Running
+        run: |
+          container_id=$(docker ps -q --filter "name=sonarqube")
+          if [ -z "$container_id" ]; then
+            echo "SonarQube container is not running."
+            echo "Checking if SonarQube container exists..."
+            existing_container=$(docker ps -a -q --filter "name=sonarqube")
+            if [ -n "$existing_container" ]; then
+              echo "SonarQube container exists but is stopped. Starting it..."
+              docker start sonarqube
+            else
+              echo "SonarQube container does not exist. Creating and starting a new container..."
+              docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube:lts
+            fi
+          else
+            echo "SonarQube container is already running."
+          fi
+
       # Run SonarQube Scan
       - name: Run SonarQube Scan
         shell: pwsh
@@ -84,11 +114,6 @@ jobs:
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      # Remove existing container if exists
-      - name: Remove Existing Docker Container
-        run: |
-          docker rm -f nodejs-hello-world || true
           
       # Deploy nodejs-hello-world app
       - name: Deploy nodejs-hello-world-app
