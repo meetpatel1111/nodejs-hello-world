@@ -95,7 +95,6 @@ jobs:
           sonar-scanner `
             -D"sonar.projectKey=nodejs-hello-world" `
             -D"sonar.sources=." `
-            -D"sonar.inclusions=nodejs-hello-world/**,nodejs-hello-world/app-code/**" `
             -D"sonar.host.url=$env:SONAR_HOST_URL" `
             -D"sonar.login=$env:SONAR_TOKEN" `
             -D"sonar.scanner.socketTimeout=120"
