@@ -50,19 +50,35 @@ jobs:
       - name: Push Docker Image
         run: docker push meetpatel1111/nodejs-hello-world:latest
       
-      # Run SonarQube Scan
-      - name: Run SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4.2.1
-        with:
-          args: > 
-            -Dsonar.projectKey=nodejs-hello-world
-            -Dsonar.sources=.
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-          scannerVersion: 6.2.1.4610
-          scannerBinariesUrl: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli
+      # # Run SonarQube Scan
+      # - name: Run SonarQube Scan
+      #   uses: SonarSource/sonarqube-scan-action@v4.2.1
+      #   with:
+      #     args: > 
+      #       -Dsonar.projectKey=nodejs-hello-world
+      #       -Dsonar.sources=.
+      #       -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+      #       -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      #     scannerVersion: 6.2.1.4610
+      #     scannerBinariesUrl: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli
 
       # # Run Sanity Checks
       # - name: Run Sanity Checks
       #   run: ./scripts/sanity-checks.sh
       #   shell: bash
+
+      # Run SonarQube Scan
+      - name: Run SonarQube Scan
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.2.1.4610-windows.zip" -OutFile "sonar-scanner.zip"
+          Expand-Archive -Path "sonar-scanner.zip" -DestinationPath ".\sonar-scanner"
+          $env:PATH += ";$PWD\sonar-scanner\bin"
+          sonar-scanner `
+            -Dsonar.projectKey="nodejs-hello-world" `
+            -Dsonar.sources="." `
+            -Dsonar.host.url="$env:SONAR_HOST_URL" `
+            -Dsonar.login="$env:SONAR_TOKEN"
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
