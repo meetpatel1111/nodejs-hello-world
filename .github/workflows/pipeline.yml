@@ -13,6 +13,14 @@ jobs:
       # Checkout  
       - name: Checkout code
         uses: actions/checkout@v3
+
+      # Clone nodejs-hello-world app code
+      - name: Clone App Code from External Repository
+        run: git clone https://github.com/fhinkel/nodejs-hello-world.git app-code
+
+      # Copy Dockerfile to app-code directory
+      - name: Copy Dockerfile
+        run: cp Dockerfile app-code/
       
       # Set up Node.js
       - name: Set Up Node.js
@@ -22,6 +30,7 @@ jobs:
 
       # Install Dependencies
       - name: Install Dependencies
+        working-directory: app-code
         run: npm install
       
       # Remove Existing Docker Container
