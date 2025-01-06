@@ -10,13 +10,13 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # # Checkout  
-      # - name: Checkout code
-      #   uses: actions/checkout@v3
+      # Checkout  
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       # Clone nodejs-hello-world app code
       - name: Clone App Code from External Repository
-        run: git clone https://github.com/fhinkel/nodejs-hello-world.git app-code
+        run: cd .. && git clone https://github.com/fhinkel/nodejs-hello-world.git app-code
       
       # Copy Dockerfile to the nodejs-hello-world directory
       - name: Copy Dockerfile
