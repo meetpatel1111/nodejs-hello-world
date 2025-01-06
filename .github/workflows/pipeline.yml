@@ -92,4 +92,4 @@ jobs:
           
       # Deploy nodejs-hello-world app
       - name: Deploy nodejs-hello-world-app
-        run: docker run -p 8080:80 --name nodejs-hello-world meetpatel1111/nodejs-hello-world:latest
+        run: docker run -d -p 8080:80 --name nodejs-hello-world meetpatel1111/nodejs-hello-world:latest
