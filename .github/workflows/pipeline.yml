@@ -26,15 +26,15 @@ jobs:
       
       # Remove Existing Docker Container
       - name: Remove Existing Docker Container
-        shell: bash
+        shell: pwsh
         run: |
-          container_id=$(docker ps -q --filter "ancestor=meetpatel1111/nodejs-hello-world:latest")
-          if [ -n "$container_id" ]; then
-            echo "Stopping and removing running container: $container_id"
+          $container_id = docker ps -q --filter "ancestor=meetpatel1111/nodejs-hello-world:latest"
+          if ($container_id) {
+            Write-Host "Stopping and removing running container: $container_id"
             docker rm -f $container_id
-          else
-            echo "No running container found for the image."
-          fi
+          } else {
+            Write-Host "No running container found for the image."
+          }
 
       # Remove Existing Docker Image
       - name: Remove Existing Docker Image
@@ -62,24 +62,24 @@ jobs:
       - name: Push Docker Image
         run: docker push meetpatel1111/nodejs-hello-world:latest
       
-      # Ensure SonarQube Container is Running
+      # Check if SonarQube container is running
       - name: Ensure SonarQube Container is Running
+        shell: pwsh
         run: |
-          container_id=$(docker ps -q --filter "name=sonarqube")
-          if [ -z "$container_id" ]; then
-            echo "SonarQube container is not running."
-            echo "Checking if SonarQube container exists..."
-            existing_container=$(docker ps -a -q --filter "name=sonarqube")
-            if [ -n "$existing_container" ]; then
-              echo "SonarQube container exists but is stopped. Starting it..."
+          $container_id = docker ps -q --filter "name=sonarqube"
+          if ($container_id) {
+            Write-Host "SonarQube container is already running."
+          } else {
+            Write-Host "SonarQube container is not running."
+            $existing_container = docker ps -a -q --filter "name=sonarqube"
+            if ($existing_container) {
+              Write-Host "SonarQube container exists but is stopped. Starting it..."
               docker start sonarqube
-            else
-              echo "SonarQube container does not exist. Creating and starting a new container..."
-              docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube:lts
-            fi
-          else
-            echo "SonarQube container is already running."
-          fi
+            } else {
+              Write-Host "SonarQube container does not exist. Creating and starting a new container..."
+              docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+            }
+          }
 
       # Run SonarQube Scan
       - name: Run SonarQube Scan
