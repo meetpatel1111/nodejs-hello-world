@@ -91,7 +91,7 @@ jobs:
               docker start sonarqube
             } else {
               Write-Host "SonarQube container does not exist. Creating and starting a new container..."
-              docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+              docker run -d --name sonarqube -p 9000:9000 sonarqube:latest
             }
           }
 
