@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-scan-deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       # Checkout  
@@ -76,59 +76,59 @@ jobs:
       - name: Push Docker Image
         run: docker push meetpatel1111/nodejs-hello-world:latest
       
-      # Check if SonarQube container is running
-      - name: Ensure SonarQube Container is Running
-        shell: pwsh
-        run: |
-          $container_id = docker ps -q --filter "name=sonarqube"
-          if ($container_id) {
-            Write-Host "SonarQube container is already running."
-          } else {
-            Write-Host "SonarQube container is not running."
-            $existing_container = docker ps -a -q --filter "name=sonarqube"
-            if ($existing_container) {
-              Write-Host "SonarQube container exists but is stopped. Starting it..."
-              docker start sonarqube
-            } else {
-              Write-Host "SonarQube container does not exist. Creating and starting a new container..."
-              docker run -d --name sonarqube -p 9000:9000 sonarqube:latest
-            }
-          }
+      # # Check if SonarQube container is running
+      # - name: Ensure SonarQube Container is Running
+      #   shell: pwsh
+      #   run: |
+      #     $container_id = docker ps -q --filter "name=sonarqube"
+      #     if ($container_id) {
+      #       Write-Host "SonarQube container is already running."
+      #     } else {
+      #       Write-Host "SonarQube container is not running."
+      #       $existing_container = docker ps -a -q --filter "name=sonarqube"
+      #       if ($existing_container) {
+      #         Write-Host "SonarQube container exists but is stopped. Starting it..."
+      #         docker start sonarqube
+      #       } else {
+      #         Write-Host "SonarQube container does not exist. Creating and starting a new container..."
+      #         docker run -d --name sonarqube -p 9000:9000 sonarqube:latest
+      #       }
+      #     }
 
-      # Run SonarQube Scan
-      - name: Run SonarQube Scan
-        shell: pwsh
-        run: |
-          Invoke-WebRequest -Uri "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.2.1.4610-windows-x64.zip" -OutFile "sonar-scanner.zip"
-          Expand-Archive -Path "sonar-scanner.zip" -DestinationPath ".\sonar-scanner"
-          $env:PATH += ";$PWD\sonar-scanner\bin"
-          sonar-scanner `
-            -D"sonar.projectKey=nodejs-hello-world" `
-            -D"sonar.sources=." `
-            -D"sonar.host.url=$env:SONAR_HOST_URL" `
-            -D"sonar.login=$env:SONAR_TOKEN" `
-            -D"sonar.scanner.socketTimeout=120"
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # # Run SonarQube Scan
+      # - name: Run SonarQube Scan
+      #   shell: pwsh
+      #   run: |
+      #     Invoke-WebRequest -Uri "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.2.1.4610-windows-x64.zip" -OutFile "sonar-scanner.zip"
+      #     Expand-Archive -Path "sonar-scanner.zip" -DestinationPath ".\sonar-scanner"
+      #     $env:PATH += ";$PWD\sonar-scanner\bin"
+      #     sonar-scanner `
+      #       -D"sonar.projectKey=nodejs-hello-world" `
+      #       -D"sonar.sources=." `
+      #       -D"sonar.host.url=$env:SONAR_HOST_URL" `
+      #       -D"sonar.login=$env:SONAR_TOKEN" `
+      #       -D"sonar.scanner.socketTimeout=120"
+      #   env:
+      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # SonarQube Quality Gate status
-      - name: SonarQube Quality Gate
-        shell: pwsh
-        run: |
-          $projectKey = "nodejs-hello-world"
-          $sonarUrl = "$env:SONAR_HOST_URL/api/qualitygates/project_status?projectKey=$projectKey"
-          $response = Invoke-RestMethod -Uri $sonarUrl -Headers @{ "Authorization" = "Bearer $env:SONAR_TOKEN" }
+      # # SonarQube Quality Gate status
+      # - name: SonarQube Quality Gate
+      #   shell: pwsh
+      #   run: |
+      #     $projectKey = "nodejs-hello-world"
+      #     $sonarUrl = "$env:SONAR_HOST_URL/api/qualitygates/project_status?projectKey=$projectKey"
+      #     $response = Invoke-RestMethod -Uri $sonarUrl -Headers @{ "Authorization" = "Bearer $env:SONAR_TOKEN" }
           
-          if ($response.projectStatus.status -ne "OK") {
-            Write-Error "SonarQube Quality Gate failed. Status: $($response.projectStatus.status)"
-            exit 1
-          } else {
-            Write-Output "SonarQube Quality Gate passed."
-          }
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     if ($response.projectStatus.status -ne "OK") {
+      #       Write-Error "SonarQube Quality Gate failed. Status: $($response.projectStatus.status)"
+      #       exit 1
+      #     } else {
+      #       Write-Output "SonarQube Quality Gate passed."
+      #     }
+      #   env:
+      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           
       # Deploy nodejs-hello-world app
       - name: Deploy nodejs-hello-world-app
